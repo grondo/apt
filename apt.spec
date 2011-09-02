@@ -58,6 +58,7 @@ Dir "/" {
 }
 EOF
 
+
 %if 0%{?chaos} < 5
 %define repodir RHEL5-debs
 %else
@@ -66,10 +67,33 @@ EOF
 echo "deb file:/repo/llnl/ %{repodir}/" \
      >$RPM_BUILD_ROOT%{_sysconfdir}/apt/sources.list
 
+cat <<EOF >$RPM_BUILD_ROOT%{_sysconfdir}/apt/apt-ftparchive.conf
+Default {
+  Packages::Compress ". gzip";
+  Contents::Compress ". gzip";
+};
+
+Dir {
+  ArchiveDir ".";
+  CacheDir ".";
+};
+
+BinDirectory "%{repodir}" {
+  Packages "%{repodir}/Packages";
+  Contents "%{repodir}/Contents";
+  BinCacheDB "%{repodir}/.cache";
+};
+
+BinDirectory "%{repodir}.scf" {
+  Packages "%{repodir}.scf/Packages";
+  Contents "%{repodir}.scf/Contents";
+  BinCacheDB "%{repodir}.scf/.cache";
+};
+EOF
+
 
 # Install builder key for later inclusion in trusted keys
 install -D -m444 buildbot.txt $RPM_BUILD_ROOT/%{_sysconfdir}/apt/buildkey.txt
-cp apt-ftparchive.conf $RPM_BUILD_ROOT/%{_sysconfdir}/apt
 cp apt-release.conf $RPM_BUILD_ROOT/%{_sysconfdir}/apt
 
 install -D -m755 apt-userinst.sh $RPM_BUILD_ROOT/%{_bindir}/apt-userinst
