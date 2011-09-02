@@ -1,3 +1,6 @@
+apt-0.7.9-22 (2011-09-02):
+ - Package separate apt-ftparchive.conf files for RHEL5 and RHEL6 RPMs.
+
 apt-0.7.9-21 (2011-07-06):
  - Add support for RHEL6-debs repositories for CHAOS5.
 
